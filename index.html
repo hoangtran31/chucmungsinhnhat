@@ -1,0 +1,29 @@
+git init
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Chúc Mừng Sinh Nhật</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="birthday-container">
+      <h1>Chúc Mừng Sinh Nhật!</h1>
+      <img src="banhsn.png" alt="Bánh sinh nhật" class="cake-image" />
+      <p class="message">
+        Chúc bạn có một ngày sinh nhật thật vui vẻ và đầy ắp tiếng cười!
+      </p>
+      <button class="celebrate-btn" onclick="startCelebration()">
+        Bắt đầu tiệc mừng
+      </button>
+    </div>
+    <script>
+      function startCelebration() {
+        // Điều hướng đến trang pháo hoa
+        window.location.href = "celebration.html";
+      }
+    </script>
+  </body>
+</html>

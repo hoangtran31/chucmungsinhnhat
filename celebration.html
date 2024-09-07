@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chúc Mừng Sinh Nhật</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: black; /* Nền đen */
+        overflow: hidden; /* Ẩn thanh cuộn */
+      }
+
+      canvas {
+        display: block;
+      }
+
+      .celebration-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+      }
+
+      #celebration-title {
+        font-size: 48px;
+        font-weight: bold;
+        opacity: 0;
+        transition: opacity 2s ease-in;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="celebration-container">
+      <h1 id="celebration-title">Chúc Mừng, [Tên Người]!</h1>
+      <canvas id="fireworksCanvas"></canvas>
+    </div>
+
+    <script>
+      // Hiệu ứng xuất hiện dần cho tiêu đề
+      window.onload = function () {
+        const title = document.getElementById("celebration-title");
+        setTimeout(() => {
+          title.style.opacity = 1;
+        }, 500); // Hiển thị tiêu đề sau 0.5 giây
+
+        // Cài đặt canvas cho pháo hoa
+        const canvas = document.getElementById("fireworksCanvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let fireworks = [];
+        let particles = [];
+
+        // Đối tượng Firework (pháo hoa bắn lên)
+        function Firework(x, y, dx, dy, color) {
+          this.x = x;
+          this.y = y;
+          this.dx = dx;
+          this.dy = dy;
+          this.color = color;
+          this.radius = 2;
+          this.alpha = 1;
+          this.hasExploded = false; // Kiểm tra xem pháo hoa đã nổ hay chưa
+
+          this.draw = function () {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
+            ctx.fill();
+          };
+
+          this.update = function () {
+            if (!this.hasExploded) {
+              this.x += this.dx;
+              this.y += this.dy;
+              if (this.y < canvas.height / 2) {
+                // Đạt đến nửa màn hình thì nổ
+                this.explode();
+              }
+            }
+            this.alpha -= 0.01; // Mờ dần
+            this.draw();
+          };
+
+          // Hàm pháo hoa nổ
+          this.explode = function () {
+            this.hasExploded = true;
+            for (let i = 0; i < 50; i++) {
+              let angle = Math.random() * Math.PI * 2; // Tạo góc ngẫu nhiên cho các mảnh vỡ
+              let speed = Math.random() * 4 + 1; // Tốc độ ngẫu nhiên
+              let dx = Math.cos(angle) * speed;
+              let dy = Math.sin(angle) * speed;
+              particles.push(new Particle(this.x, this.y, dx, dy, this.color));
+            }
+          };
+        }
+
+        // Đối tượng Particle (các mảnh vụn sau khi pháo hoa nổ)
+        function Particle(x, y, dx, dy, color) {
+          this.x = x;
+          this.y = y;
+          this.dx = dx;
+          this.dy = dy;
+          this.color = color;
+          this.radius = 2;
+          this.alpha = 1;
+
+          this.draw = function () {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${this.color}, ${this.alpha})`;
+            ctx.fill();
+          };
+
+          this.update = function () {
+            this.x += this.dx;
+            this.y += this.dy;
+            this.alpha -= 0.02; // Mờ dần
+            this.draw();
+          };
+        }
+
+        // Tạo pháo hoa bắn lên từ dưới
+        function createFireworks() {
+          let x = Math.random() * canvas.width;
+          let y = canvas.height;
+          let dx = (Math.random() - 0.5) * 3;
+          let dy = Math.random() * -8 - 4; // Bắn lên
+          let color = `${Math.floor(Math.random() * 255)}, ${Math.floor(
+            Math.random() * 255
+          )}, ${Math.floor(Math.random() * 255)}`;
+          fireworks.push(new Firework(x, y, dx, dy, color));
+        }
+
+        function animate() {
+          requestAnimationFrame(animate);
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // Cập nhật pháo hoa
+          for (let i = 0; i < fireworks.length; i++) {
+            fireworks[i].update();
+            if (fireworks[i].alpha <= 0) {
+              fireworks.splice(i, 1);
+            }
+          }
+
+          // Cập nhật các mảnh vụn
+          for (let i = 0; i < particles.length; i++) {
+            particles[i].update();
+            if (particles[i].alpha <= 0) {
+              particles.splice(i, 1);
+            }
+          }
+
+          if (fireworks.length === 0) {
+            createFireworks();
+          }
+        }
+
+        createFireworks();
+        animate();
+      };
+    </script>
+  </body>
+</html>
